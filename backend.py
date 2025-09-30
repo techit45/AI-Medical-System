@@ -14,10 +14,8 @@ import json
 import pickle
 from datetime import datetime
 
-# LangChain imports
-from langchain_openai import ChatOpenAI
-from langchain.memory import ConversationBufferMemory
-from langchain.schema import HumanMessage, AIMessage
+# OpenAI imports
+from openai import OpenAI
 
 # ML imports
 from sklearn.model_selection import train_test_split
@@ -34,17 +32,11 @@ app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"])
 xray_model = YOLO("models/xray_best.pt")
 blood_model = YOLO("models/blood_best.pt")
 
-# LangChain Chatbot Setup
-# Set environment variable for OpenAI
-os.environ["OPENAI_API_KEY"] = os.getenv("OPENAI_API_KEY", "")
+# OpenAI Client Setup
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-llm = ChatOpenAI(
-    model_name="gpt-3.5-turbo",
-    temperature=0.3
-)
-
-# เก็บ memory สำหรับแต่ละ session
-chat_memories = {}
+# เก็บ conversation history สำหรับแต่ละ session
+chat_histories = {}
 
 # เก็บข้อมูลการซักประวัติอาการ
 symptom_sessions = {}
@@ -415,11 +407,11 @@ async def chat_with_ai(
     """Chatbot endpoint ใหม่"""
 
     try:
-        # สร้าง memory สำหรับ session
-        if session_id not in chat_memories:
-            chat_memories[session_id] = ConversationBufferMemory(return_messages=True)
+        # สร้าง history สำหรับ session
+        if session_id not in chat_histories:
+            chat_histories[session_id] = []
 
-        memory = chat_memories[session_id]
+        history = chat_histories[session_id]
 
         # ตรวจสอบคำสำคัญเกี่ยวกับอาการไม่สบาย
         symptom_keywords = ["ไม่สบาย", "ปวด", "เจ็บ", "เป็นไข้", "อาการ", "ป่วย", "sick", "pain", "hurt",
@@ -466,24 +458,26 @@ async def chat_with_ai(
             # สร้าง full prompt
             full_prompt = get_medical_system_prompt() + patient_context + context_prompt + f"\n\nคำถาม: {message}"
 
-        # ได้ประวัติการสนทนา
-        chat_history = memory.chat_memory.messages
-
-        # สร้าง messages สำหรับ LangChain
-        messages = [HumanMessage(content=full_prompt)]
+        # สร้าง messages สำหรับ OpenAI
+        messages = [{"role": "system", "content": get_medical_system_prompt()}]
 
         # เพิ่มประวัติการสนทนา (เฉพาะ 5 ข้อความล่าสุด)
-        if chat_history:
-            recent_history = chat_history[-5:]  # เอาแค่ 5 ข้อความล่าสุด
-            messages = recent_history + messages
+        if history:
+            messages.extend(history[-10:])  # เอาแค่ 10 ข้อความล่าสุด
 
-        # เรียก LangChain
-        response = llm.invoke(messages)
-        ai_response = response.content
+        messages.append({"role": "user", "content": message})
 
-        # บันทึกลง memory
-        memory.chat_memory.add_user_message(message)
-        memory.chat_memory.add_ai_message(ai_response)
+        # เรียก OpenAI API
+        response = client.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=messages,
+            temperature=0.3
+        )
+        ai_response = response.choices[0].message.content
+
+        # บันทึกลง history
+        history.append({"role": "user", "content": message})
+        history.append({"role": "assistant", "content": ai_response})
 
         return {
             "response": ai_response,
