@@ -40,7 +40,6 @@ wheels/
 *.pkl
 *.h5
 *.pth
-*.pt
 *.onnx
 *.csv
 *.xlsx
@@ -48,9 +47,8 @@ wheels/
 *.zip
 *.tar.gz
 
-# Models (ถ้าไม่ต้องการ commit models ขนาดใหญ่)
-# models/*.pt
-# models/*.pth
+# Models - Allow models folder but ignore others
+!models/*.pt
 # condition_model.pkl
 
 # Dataset
