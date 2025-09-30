@@ -1,0 +1,1302 @@
+<!DOCTYPE html>
+<html lang="th">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ระบบแพทย์ AI</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&family=Prompt:wght@300;400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      :root {
+        --primary: #1e88e5;
+        --primary-dark: #1565c0;
+        --secondary: #43a047;
+        --secondary-dark: #2e7d32;
+        --accent: #00bcd4;
+        --light: #f5f9ff;
+        --dark: #263238;
+        --success: #4caf50;
+        --warning: #ff9800;
+        --danger: #f44336;
+        --gray: #78909c;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Prompt", "Kanit", sans-serif;
+      }
+
+      body {
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        color: var(--dark);
+        min-height: 100vh;
+        padding: 20px;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      header {
+        text-align: center;
+        margin-bottom: 30px;
+        animation: fadeIn 1s ease;
+      }
+
+      .logo {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 15px;
+        margin-bottom: 10px;
+      }
+
+      .logo i {
+        font-size: 2.5rem;
+        color: white;
+      }
+
+      h1 {
+        font-size: 2.8rem;
+        color: white;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        margin-bottom: 10px;
+      }
+
+      .subtitle {
+        font-size: 1.2rem;
+        color: rgba(255, 255, 255, 0.9);
+        margin-bottom: 20px;
+      }
+
+      .main-card {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        overflow: hidden;
+        animation: slideUp 0.8s ease;
+      }
+
+      .tabs {
+        display: flex;
+        background: var(--light);
+        border-bottom: 1px solid #e0e0e0;
+      }
+
+      .tab-btn {
+        flex: 1;
+        padding: 18px 20px;
+        background: none;
+        border: none;
+        font-size: 1.1rem;
+        font-weight: 500;
+        color: var(--gray);
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+      }
+
+      .tab-btn:hover {
+        background: rgba(30, 136, 229, 0.1);
+        color: var(--primary);
+      }
+
+      .tab-btn.active {
+        background: white;
+        color: var(--primary);
+        border-bottom: 3px solid var(--primary);
+      }
+
+      .tab-content {
+        padding: 30px;
+        min-height: 500px;
+      }
+
+      .tab-panel {
+        display: none;
+        animation: fadeIn 0.5s ease;
+      }
+
+      .tab-panel.active {
+        display: block;
+      }
+
+      .panel-title {
+        font-size: 1.8rem;
+        color: var(--primary);
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .upload-area {
+        border: 2px dashed var(--primary);
+        border-radius: 15px;
+        padding: 40px 20px;
+        text-align: center;
+        margin-bottom: 20px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .upload-area:hover {
+        background: rgba(30, 136, 229, 0.05);
+      }
+
+      .upload-area i {
+        font-size: 3rem;
+        color: var(--primary);
+        margin-bottom: 15px;
+      }
+
+      .upload-text {
+        font-size: 1.2rem;
+        color: var(--primary);
+        margin-bottom: 10px;
+      }
+
+      .upload-subtext {
+        color: var(--gray);
+        font-size: 0.9rem;
+      }
+
+      .image-preview {
+        max-width: 100%;
+        max-height: 300px;
+        margin: 20px auto;
+        border-radius: 10px;
+        display: none;
+      }
+
+      .btn-group {
+        display: flex;
+        gap: 15px;
+        margin-top: 20px;
+      }
+
+      .btn {
+        padding: 12px 25px;
+        border: none;
+        border-radius: 10px;
+        font-size: 1rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+      }
+
+      .btn-primary {
+        background: var(--primary);
+        color: white;
+      }
+
+      .btn-primary:hover {
+        background: var(--primary-dark);
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(30, 136, 229, 0.3);
+      }
+
+      .btn-secondary {
+        background: var(--secondary);
+        color: white;
+      }
+
+      .btn-secondary:hover {
+        background: var(--secondary-dark);
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(67, 160, 71, 0.3);
+      }
+
+      .btn-outline {
+        background: transparent;
+        color: var(--primary);
+        border: 2px solid var(--primary);
+      }
+
+      .btn-outline:hover {
+        background: rgba(30, 136, 229, 0.1);
+      }
+
+      .result-area {
+        margin-top: 30px;
+        padding: 20px;
+        border-radius: 15px;
+        background: var(--light);
+        display: none;
+      }
+
+      .result-title {
+        font-size: 1.3rem;
+        color: var(--primary);
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .result-content {
+        line-height: 1.6;
+      }
+
+      .chat-container {
+        display: flex;
+        flex-direction: column;
+        height: 450px;
+        border: 1px solid #e0e0e0;
+        border-radius: 15px;
+        overflow: hidden;
+      }
+
+      .chat-messages {
+        flex: 1;
+        padding: 20px;
+        overflow-y: auto;
+        background: #f9f9f9;
+      }
+
+      .message {
+        margin-bottom: 15px;
+        padding: 12px 18px;
+        border-radius: 18px;
+        max-width: 80%;
+        animation: fadeIn 0.3s ease;
+      }
+
+      .user-message {
+        background: var(--primary);
+        color: white;
+        margin-left: auto;
+        border-bottom-right-radius: 5px;
+      }
+
+      .ai-message {
+        background: white;
+        border: 1px solid #e0e0e0;
+        margin-right: auto;
+        border-bottom-left-radius: 5px;
+      }
+
+      .chat-input {
+        display: flex;
+        padding: 15px;
+        background: white;
+        border-top: 1px solid #e0e0e0;
+      }
+
+      .chat-input input {
+        flex: 1;
+        padding: 12px 15px;
+        border: 1px solid #e0e0e0;
+        border-radius: 25px;
+        font-size: 1rem;
+        outline: none;
+      }
+
+      .chat-input input:focus {
+        border-color: var(--primary);
+      }
+
+      .chat-input button {
+        margin-left: 10px;
+        background: var(--primary);
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .chat-input button:hover {
+        background: var(--primary-dark);
+        transform: scale(1.05);
+      }
+
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 20px;
+        margin-top: 20px;
+      }
+
+      .stat-card {
+        background: var(--light);
+        border-radius: 15px;
+        padding: 20px;
+        text-align: center;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        transition: all 0.3s ease;
+      }
+
+      .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+      }
+
+      .stat-icon {
+        font-size: 2.5rem;
+        color: var(--primary);
+        margin-bottom: 15px;
+      }
+
+      .stat-value {
+        font-size: 2rem;
+        font-weight: 600;
+        color: var(--primary);
+        margin-bottom: 5px;
+      }
+
+      .stat-label {
+        color: var(--gray);
+        font-size: 0.9rem;
+      }
+
+      .symptom-form {
+        margin-top: 20px;
+      }
+
+      .form-group {
+        margin-bottom: 20px;
+      }
+
+      .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 500;
+        color: var(--dark);
+      }
+
+      .form-group input,
+      .form-group select,
+      .form-group textarea {
+        width: 100%;
+        padding: 12px 15px;
+        border: 1px solid #e0e0e0;
+        border-radius: 10px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+      }
+
+      .form-group input:focus,
+      .form-group select:focus,
+      .form-group textarea:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(30, 136, 229, 0.2);
+        outline: none;
+      }
+
+      .progress-bar {
+        height: 8px;
+        background: #e0e0e0;
+        border-radius: 4px;
+        margin: 20px 0;
+        overflow: hidden;
+      }
+
+      .progress {
+        height: 100%;
+        background: var(--primary);
+        border-radius: 4px;
+        transition: width 0.5s ease;
+      }
+
+      .loading {
+        display: none;
+        text-align: center;
+        padding: 20px;
+      }
+
+      .loading-spinner {
+        width: 40px;
+        height: 40px;
+        border: 4px solid rgba(30, 136, 229, 0.2);
+        border-left: 4px solid var(--primary);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 15px;
+      }
+
+      .alert {
+        padding: 15px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        display: none;
+      }
+
+      .alert-success {
+        background: rgba(76, 175, 80, 0.1);
+        border: 1px solid var(--success);
+        color: var(--success);
+      }
+
+      .alert-error {
+        background: rgba(244, 67, 54, 0.1);
+        border: 1px solid var(--danger);
+        color: var(--danger);
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      @keyframes slideUp {
+        from {
+          transform: translateY(30px);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+
+      @keyframes spin {
+        from {
+          transform: rotate(0deg);
+        }
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      @media (max-width: 768px) {
+        .tabs {
+          flex-direction: column;
+        }
+
+        .tab-btn {
+          padding: 15px;
+        }
+
+        .btn-group {
+          flex-direction: column;
+        }
+
+        .stats-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .message {
+          max-width: 90%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <div class="logo">
+          <i class="fas fa-stethoscope"></i>
+          <h1>ระบบแพทย์ AI</h1>
+        </div>
+        <p class="subtitle">ปัญญาประดิษฐ์เพื่อการวิเคราะห์ทางการแพทย์ครบวงจร</p>
+        <p style="margin-top: 15px; font-size: 1rem; color: rgba(255,255,255,0.8);">
+          <i class="fas fa-user-graduate"></i> พัฒนาโดย: <strong>นักศึกษา Computer Science</strong> |
+          <i class="fas fa-university"></i> KMUTT
+        </p>
+      </header>
+
+      <div class="main-card">
+        <div class="tabs">
+          <button class="tab-btn active" onclick="switchTab('about')">
+            <i class="fas fa-info-circle"></i> เกี่ยวกับโปรเจค
+          </button>
+          <button class="tab-btn" onclick="switchTab('analyze')">
+            <i class="fas fa-image"></i> วิเคราะห์ภาพ
+          </button>
+          <button class="tab-btn" onclick="switchTab('symptom')">
+            <i class="fas fa-stethoscope"></i> ซักประวัติ
+          </button>
+          <button class="tab-btn" onclick="switchTab('chat')">
+            <i class="fas fa-robot"></i> แชทบอท
+          </button>
+          <button class="tab-btn" onclick="switchTab('stats')">
+            <i class="fas fa-chart-bar"></i> สถิติ
+          </button>
+        </div>
+
+        <div class="tab-content">
+          <!-- เกี่ยวกับโปรเจค -->
+          <div id="about-panel" class="tab-panel active">
+            <h2 class="panel-title">
+              <i class="fas fa-project-diagram"></i> เกี่ยวกับโปรเจค AI Medical System
+            </h2>
+
+            <div style="background: rgba(30, 136, 229, 0.1); padding: 25px; border-radius: 15px; margin-bottom: 30px; border-left: 4px solid var(--primary);">
+              <h3 style="color: var(--primary); margin-bottom: 15px;">
+                <i class="fas fa-lightbulb"></i> ภาพรวมโปรเจค
+              </h3>
+              <p style="line-height: 1.8; font-size: 1.05rem;">
+                ระบบ AI Medical Assistant ที่ครบวงจร ออกแบบมาเพื่อช่วยเหลือในการวิเคราะห์ข้อมูลทางการแพทย์
+                ด้วยเทคโนโลยี Deep Learning, Computer Vision และ Natural Language Processing
+                สามารถวิเคราะห์ภาพทางการแพทย์, ทำนายโรค และให้คำปรึกษาผ่าน AI Chatbot
+              </p>
+            </div>
+
+            <h3 style="color: var(--primary); margin-bottom: 20px;">
+              <i class="fas fa-star"></i> ฟีเจอร์หลัก
+            </h3>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 30px;">
+              <div style="background: var(--light); padding: 20px; border-radius: 15px; border: 2px solid var(--primary);">
+                <div style="font-size: 2.5rem; color: var(--primary); margin-bottom: 10px;">
+                  <i class="fas fa-x-ray"></i>
+                </div>
+                <h4 style="color: var(--dark); margin-bottom: 10px; font-size: 1.2rem;">วิเคราะห์ X-Ray</h4>
+                <p style="color: var(--gray); font-size: 0.95rem;">
+                  ใช้ YOLO Model วิเคราะห์ภาพ X-Ray ความแม่นยำ 95%+
+                </p>
+              </div>
+
+              <div style="background: var(--light); padding: 20px; border-radius: 15px; border: 2px solid var(--secondary);">
+                <div style="font-size: 2.5rem; color: var(--secondary); margin-bottom: 10px;">
+                  <i class="fas fa-droplet"></i>
+                </div>
+                <h4 style="color: var(--dark); margin-bottom: 10px; font-size: 1.2rem;">ตรวจเซลล์เลือด</h4>
+                <p style="color: var(--gray); font-size: 0.95rem;">
+                  Object Detection นับและแยกประเภทเซลล์เลือดอัตโนมัติ
+                </p>
+              </div>
+
+              <div style="background: var(--light); padding: 20px; border-radius: 15px; border: 2px solid var(--accent);">
+                <div style="font-size: 2.5rem; color: var(--accent); margin-bottom: 10px;">
+                  <i class="fas fa-brain"></i>
+                </div>
+                <h4 style="color: var(--dark); margin-bottom: 10px; font-size: 1.2rem;">ทำนายโรค ML</h4>
+                <p style="color: var(--gray); font-size: 0.95rem;">
+                  RandomForest Model ทำนายโรค 6 ประเภทความแม่นยำ 98%
+                </p>
+              </div>
+
+              <div style="background: var(--light); padding: 20px; border-radius: 15px; border: 2px solid var(--success);">
+                <div style="font-size: 2.5rem; color: var(--success); margin-bottom: 10px;">
+                  <i class="fas fa-robot"></i>
+                </div>
+                <h4 style="color: var(--dark); margin-bottom: 10px; font-size: 1.2rem;">AI Chatbot</h4>
+                <p style="color: var(--gray); font-size: 0.95rem;">
+                  LangChain + GPT-3.5 ตอบคำถามและให้คำปรึกษาทางการแพทย์
+                </p>
+              </div>
+            </div>
+
+            <h3 style="color: var(--primary); margin-bottom: 20px;">
+              <i class="fas fa-code"></i> เทคโนโลยีที่ใช้
+            </h3>
+
+            <div style="display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 30px;">
+              <span style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 8px 18px; border-radius: 20px; font-weight: 500; font-size: 0.95rem;">
+                <i class="fab fa-python"></i> Python
+              </span>
+              <span style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 8px 18px; border-radius: 20px; font-weight: 500; font-size: 0.95rem;">
+                <i class="fas fa-bolt"></i> FastAPI
+              </span>
+              <span style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 8px 18px; border-radius: 20px; font-weight: 500; font-size: 0.95rem;">
+                <i class="fas fa-brain"></i> YOLO (Ultralytics)
+              </span>
+              <span style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 8px 18px; border-radius: 20px; font-weight: 500; font-size: 0.95rem;">
+                <i class="fas fa-robot"></i> LangChain
+              </span>
+              <span style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 8px 18px; border-radius: 20px; font-weight: 500; font-size: 0.95rem;">
+                <i class="fas fa-comment"></i> OpenAI GPT-3.5
+              </span>
+              <span style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 8px 18px; border-radius: 20px; font-weight: 500; font-size: 0.95rem;">
+                <i class="fas fa-chart-line"></i> Scikit-learn
+              </span>
+              <span style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 8px 18px; border-radius: 20px; font-weight: 500; font-size: 0.95rem;">
+                <i class="fas fa-table"></i> Pandas
+              </span>
+              <span style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 8px 18px; border-radius: 20px; font-weight: 500; font-size: 0.95rem;">
+                <i class="fas fa-fire"></i> PyTorch
+              </span>
+              <span style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 8px 18px; border-radius: 20px; font-weight: 500; font-size: 0.95rem;">
+                <i class="fas fa-eye"></i> OpenCV
+              </span>
+              <span style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 8px 18px; border-radius: 20px; font-weight: 500; font-size: 0.95rem;">
+                <i class="fas fa-code"></i> HTML/CSS/JS
+              </span>
+            </div>
+
+            <h3 style="color: var(--primary); margin-bottom: 20px;">
+              <i class="fas fa-chart-pie"></i> ผลลัพธ์ที่ได้
+            </h3>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+              <div style="background: linear-gradient(135deg, var(--primary), var(--secondary)); padding: 20px; border-radius: 15px; text-align: center; color: white;">
+                <div style="font-size: 2.5rem; font-weight: 700; margin-bottom: 5px;">95%+</div>
+                <div style="font-size: 0.9rem; opacity: 0.9;">X-Ray Accuracy</div>
+              </div>
+              <div style="background: linear-gradient(135deg, var(--secondary), var(--accent)); padding: 20px; border-radius: 15px; text-align: center; color: white;">
+                <div style="font-size: 2.5rem; font-weight: 700; margin-bottom: 5px;">98%</div>
+                <div style="font-size: 0.9rem; opacity: 0.9;">ML Model Accuracy</div>
+              </div>
+              <div style="background: linear-gradient(135deg, var(--accent), var(--success)); padding: 20px; border-radius: 15px; text-align: center; color: white;">
+                <div style="font-size: 2.5rem; font-weight: 700; margin-bottom: 5px;">10K+</div>
+                <div style="font-size: 0.9rem; opacity: 0.9;">Patient Records</div>
+              </div>
+              <div style="background: linear-gradient(135deg, var(--success), var(--primary)); padding: 20px; border-radius: 15px; text-align: center; color: white;">
+                <div style="font-size: 2.5rem; font-weight: 700; margin-bottom: 5px;">4</div>
+                <div style="font-size: 0.9rem; opacity: 0.9;">Core Features</div>
+              </div>
+            </div>
+
+            <div style="margin-top: 30px; padding: 20px; background: rgba(67, 160, 71, 0.1); border-radius: 15px; border-left: 4px solid var(--success);">
+              <p style="font-size: 1.05rem; line-height: 1.8; color: var(--dark);">
+                <i class="fas fa-check-circle" style="color: var(--success);"></i>
+                <strong>ทดลองใช้งานฟีเจอร์ต่างๆ ได้ที่แท็บด้านบน</strong> -
+                ระบบพร้อมใช้งานจริง สามารถทดสอบการวิเคราะห์ภาพ, ซักประวัติอาการ, และแชทกับ AI Chatbot ได้ทันที
+              </p>
+            </div>
+          </div>
+
+          <!-- วิเคราะห์ภาพ -->
+          <div id="analyze-panel" class="tab-panel">
+            <h2 class="panel-title">
+              <i class="fas fa-image"></i> วิเคราะห์ภาพทางการแพทย์
+            </h2>
+            <p>อัพโหลดภาพ X-Ray หรือภาพเลือดเพื่อวิเคราะห์ด้วย AI</p>
+
+            <div
+              class="upload-area"
+              onclick="document.getElementById('image-upload').click()"
+            >
+              <i class="fas fa-cloud-upload-alt"></i>
+              <div class="upload-text">คลิกเพื่ออัพโหลดภาพ</div>
+              <div class="upload-subtext">
+                รองรับไฟล์ JPG, PNG ขนาดไม่เกิน 10MB
+              </div>
+            </div>
+
+            <input
+              type="file"
+              id="image-upload"
+              accept="image/*"
+              style="display: none"
+              onchange="previewImage()"
+            />
+
+            <img id="image-preview" class="image-preview" alt="ภาพตัวอย่าง" />
+
+            <div class="form-group">
+              <label for="image-type">ประเภทภาพ:</label>
+              <select id="image-type">
+                <option value="xray">X-Ray</option>
+                <option value="blood">เลือด</option>
+              </select>
+            </div>
+
+            <div class="btn-group">
+              <button class="btn btn-primary" onclick="analyzeImage()">
+                <i class="fas fa-search"></i> วิเคราะห์ภาพ
+              </button>
+              <button class="btn btn-outline" onclick="clearImage()">
+                <i class="fas fa-times"></i> ล้างภาพ
+              </button>
+            </div>
+
+            <div class="loading" id="analyze-loading">
+              <div class="loading-spinner"></div>
+              <p>กำลังวิเคราะห์ภาพ...</p>
+            </div>
+
+            <div class="result-area" id="analyze-result">
+              <h3 class="result-title">
+                <i class="fas fa-clipboard-check"></i> ผลการวิเคราะห์
+              </h3>
+              <div class="result-content" id="analyze-result-content"></div>
+            </div>
+          </div>
+
+          <!-- ซักประวัติ -->
+          <div id="symptom-panel" class="tab-panel">
+            <h2 class="panel-title">
+              <i class="fas fa-stethoscope"></i> ซักประวัติอาการ
+            </h2>
+            <p>ตอบคำถามเกี่ยวกับอาการของคุณเพื่อรับการประเมินเบื้องต้น</p>
+
+            <div class="alert" id="symptom-alert"></div>
+
+            <div id="symptom-form" class="symptom-form" style="display: none">
+              <div class="progress-bar">
+                <div
+                  class="progress"
+                  id="symptom-progress"
+                  style="width: 0%"
+                ></div>
+              </div>
+
+              <div class="form-group">
+                <label id="symptom-question">คำถาม</label>
+                <div id="symptom-input-area"></div>
+              </div>
+
+              <div class="btn-group">
+                <button
+                  class="btn btn-primary"
+                  id="symptom-submit"
+                  onclick="submitSymptomAnswer()"
+                >
+                  <i class="fas fa-arrow-right"></i> ถัดไป
+                </button>
+                <button class="btn btn-outline" onclick="resetSymptom()">
+                  <i class="fas fa-redo"></i> เริ่มใหม่
+                </button>
+              </div>
+            </div>
+
+            <div
+              id="symptom-start"
+              style="text-align: center; margin-top: 50px"
+            >
+              <button
+                class="btn btn-secondary"
+                onclick="startSymptomTracking()"
+              >
+                <i class="fas fa-play-circle"></i> เริ่มซักประวัติอาการ
+              </button>
+            </div>
+
+            <div class="result-area" id="symptom-result" style="display: none">
+              <h3 class="result-title">
+                <i class="fas fa-clipboard-check"></i> ผลการประเมิน
+              </h3>
+              <div class="result-content" id="symptom-result-content"></div>
+            </div>
+          </div>
+
+          <!-- แชทบอท -->
+          <div id="chat-panel" class="tab-panel">
+            <h2 class="panel-title">
+              <i class="fas fa-robot"></i> แชทบอททางการแพทย์
+            </h2>
+            <p>สอบถามข้อมูลสุขภาพหรือปรึกษาปัญหาสุขภาพกับ AI</p>
+
+            <div class="chat-container">
+              <div class="chat-messages" id="chat-messages">
+                <div class="message ai-message">
+                  สวัสดีครับ/ค่ะ! ฉันเป็นผู้ช่วยทางการแพทย์ AI
+                  มีอะไรให้ช่วยเหลือไหมครับ/คะ?
+                </div>
+              </div>
+              <div class="chat-input">
+                <input
+                  type="text"
+                  id="chat-input"
+                  placeholder="พิมพ์ข้อความที่นี่..."
+                  onkeypress="handleChatKeypress(event)"
+                />
+                <button onclick="sendChatMessage()">
+                  <i class="fas fa-paper-plane"></i>
+                </button>
+              </div>
+            </div>
+
+            <div class="btn-group" style="margin-top: 15px">
+              <button class="btn btn-outline" onclick="clearChat()">
+                <i class="fas fa-trash"></i> ล้างการสนทนา
+              </button>
+            </div>
+          </div>
+
+          <!-- สถิติ -->
+          <div id="stats-panel" class="tab-panel">
+            <h2 class="panel-title">
+              <i class="fas fa-chart-bar"></i> สถิติผู้ป่วย
+            </h2>
+            <p>ข้อมูลสถิติผู้ป่วยจากฐานข้อมูล</p>
+
+            <div class="btn-group">
+              <button class="btn btn-primary" onclick="loadPatientStats()">
+                <i class="fas fa-sync-alt"></i> โหลดสถิติ
+              </button>
+            </div>
+
+            <div class="loading" id="stats-loading">
+              <div class="loading-spinner"></div>
+              <p>กำลังโหลดข้อมูล...</p>
+            </div>
+
+            <div class="stats-grid" id="stats-container">
+              <!-- สถิติจะแสดงที่นี่ -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // ตัวแปร global
+      let currentSessionId = "user-" + Date.now();
+      let symptomSessionId = null;
+      let currentSymptomQuestion = null;
+
+      // ฟังก์ชันเปลี่ยนแท็บ
+      function switchTab(tabName) {
+        // ซ่อนแท็บทั้งหมด
+        document.querySelectorAll(".tab-panel").forEach((panel) => {
+          panel.classList.remove("active");
+        });
+
+        // แสดงแท็บที่เลือก
+        document.getElementById(tabName + "-panel").classList.add("active");
+
+        // อัพเดทปุ่มแท็บ
+        document.querySelectorAll(".tab-btn").forEach((btn) => {
+          btn.classList.remove("active");
+        });
+
+        event.currentTarget.classList.add("active");
+
+        // โหลดสถิติเมื่อเปลี่ยนไปแท็บสถิติ
+        if (tabName === "stats") {
+          loadPatientStats();
+        }
+      }
+
+      // ฟังก์ชันแสดงตัวอย่างภาพ
+      function previewImage() {
+        const fileInput = document.getElementById("image-upload");
+        const preview = document.getElementById("image-preview");
+
+        if (fileInput.files && fileInput.files[0]) {
+          const reader = new FileReader();
+
+          reader.onload = function (e) {
+            preview.src = e.target.result;
+            preview.style.display = "block";
+          };
+
+          reader.readAsDataURL(fileInput.files[0]);
+        }
+      }
+
+      // ฟังก์ชันล้างภาพ
+      function clearImage() {
+        document.getElementById("image-upload").value = "";
+        document.getElementById("image-preview").style.display = "none";
+        document.getElementById("analyze-result").style.display = "none";
+      }
+
+      // ฟังก์ชันวิเคราะห์ภาพ
+      async function analyzeImage() {
+        const fileInput = document.getElementById("image-upload");
+        const imageType = document.getElementById("image-type").value;
+
+        if (!fileInput.files[0]) {
+          alert("กรุณาเลือกภาพก่อนวิเคราะห์");
+          return;
+        }
+
+        const formData = new FormData();
+        formData.append("file", fileInput.files[0]);
+        formData.append("image_type", imageType);
+
+        // แสดง loading
+        document.getElementById("analyze-loading").style.display = "block";
+        document.getElementById("analyze-result").style.display = "none";
+
+        try {
+          const response = await fetch("http://localhost:8000/analyze", {
+            method: "POST",
+            body: formData,
+          });
+
+          const result = await response.json();
+
+          // ซ่อน loading
+          document.getElementById("analyze-loading").style.display = "none";
+
+          if (result.success) {
+            let resultHtml = "";
+
+            if (result.type === "xray") {
+              resultHtml = `
+                            <p><strong>ผลการวิเคราะห์:</strong> ${result.result}</p>
+                            <p><strong>ความมั่นใจ:</strong> ${result.confidence}</p>
+                        `;
+            } else if (result.type === "blood") {
+              resultHtml = `
+                            <p><strong>จำนวนเซลล์ทั้งหมด:</strong> ${
+                              result.total_cells
+                            }</p>
+                            <p><strong>จำนวนเซลล์แต่ละประเภท:</strong></p>
+                            <ul>
+                                ${Object.entries(result.cell_counts)
+                                  .map(
+                                    ([type, count]) =>
+                                      `<li>${type}: ${count} เซลล์</li>`
+                                  )
+                                  .join("")}
+                            </ul>
+                        `;
+            }
+
+            document.getElementById("analyze-result-content").innerHTML =
+              resultHtml;
+            document.getElementById("analyze-result").style.display = "block";
+          } else {
+            alert("การวิเคราะห์ล้มเหลว: " + result.error);
+          }
+        } catch (error) {
+          document.getElementById("analyze-loading").style.display = "none";
+          alert("เกิดข้อผิดพลาดในการเชื่อมต่อ: " + error.message);
+        }
+      }
+
+      // ฟังก์ชันเริ่มซักประวัติอาการ
+      async function startSymptomTracking() {
+        const formData = new FormData();
+        formData.append("session_id", currentSessionId);
+
+        try {
+          const response = await fetch("http://localhost:8000/symptom/start", {
+            method: "POST",
+            body: formData,
+          });
+
+          const result = await response.json();
+
+          if (result.success) {
+            symptomSessionId = result.session_id;
+            currentSymptomQuestion = {
+              key: result.question_key,
+              type: result.question_type,
+              options: result.options,
+            };
+
+            // แสดงฟอร์มและซ่อนปุ่มเริ่มต้น
+            document.getElementById("symptom-start").style.display = "none";
+            document.getElementById("symptom-form").style.display = "block";
+
+            // อัพเดทคำถาม
+            document.getElementById("symptom-question").textContent =
+              result.question;
+
+            // สร้าง input ตามประเภท
+            const inputArea = document.getElementById("symptom-input-area");
+            inputArea.innerHTML = "";
+
+            if (result.question_type === "number") {
+              inputArea.innerHTML = `<input type="number" id="symptom-answer" min="0" max="120">`;
+            } else if (result.question_type === "choice") {
+              let optionsHtml = "";
+              result.options.forEach((option, index) => {
+                optionsHtml += `
+                                <div style="margin-bottom: 10px;">
+                                    <input type="radio" id="option-${index}" name="symptom-answer" value="${option}">
+                                    <label for="option-${index}">${option}</label>
+                                </div>
+                            `;
+              });
+              inputArea.innerHTML = optionsHtml;
+            } else {
+              inputArea.innerHTML = `<input type="text" id="symptom-answer">`;
+            }
+
+            // อัพเดท progress
+            const progressParts = result.progress.split("/");
+            const progressPercent =
+              (parseInt(progressParts[0]) / parseInt(progressParts[1])) * 100;
+            document.getElementById(
+              "symptom-progress"
+            ).style.width = `${progressPercent}%`;
+
+            // แสดง alert
+            const alert = document.getElementById("symptom-alert");
+            alert.textContent = `คำถามที่ ${progressParts[0]} จาก ${progressParts[1]}`;
+            alert.className = "alert alert-success";
+            alert.style.display = "block";
+          } else {
+            alert("ไม่สามารถเริ่มซักประวัติได้: " + result.error);
+          }
+        } catch (error) {
+          alert("เกิดข้อผิดพลาดในการเชื่อมต่อ: " + error.message);
+        }
+      }
+
+      // ฟังก์ชันส่งคำตอบอาการ
+      async function submitSymptomAnswer() {
+        if (!symptomSessionId || !currentSymptomQuestion) {
+          alert("กรุณาเริ่มซักประวัติก่อน");
+          return;
+        }
+
+        let answerValue = "";
+
+        if (currentSymptomQuestion.type === "choice") {
+          const selectedOption = document.querySelector(
+            'input[name="symptom-answer"]:checked'
+          );
+          if (!selectedOption) {
+            alert("กรุณาเลือกคำตอบ");
+            return;
+          }
+          answerValue = selectedOption.value;
+        } else {
+          const input = document.getElementById("symptom-answer");
+          if (!input.value.trim()) {
+            alert("กรุณากรอกคำตอบ");
+            return;
+          }
+          answerValue = input.value;
+        }
+
+        const formData = new FormData();
+        formData.append("session_id", symptomSessionId);
+        formData.append("question_key", currentSymptomQuestion.key);
+        formData.append("answer", answerValue);
+
+        try {
+          const response = await fetch("http://localhost:8000/symptom/answer", {
+            method: "POST",
+            body: formData,
+          });
+
+          const result = await response.json();
+
+          if (result.success) {
+            if (result.completed) {
+              // แสดงผลลัพธ์
+              document.getElementById("symptom-form").style.display = "none";
+              document.getElementById("symptom-result-content").innerHTML =
+                result.recommendation;
+              document.getElementById("symptom-result").style.display = "block";
+
+              // แสดง alert
+              const alert = document.getElementById("symptom-alert");
+              alert.textContent = "การซักประวัติเสร็จสิ้น";
+              alert.className = "alert alert-success";
+              alert.style.display = "block";
+            } else {
+              // อัพเดทคำถามต่อไป
+              currentSymptomQuestion = {
+                key: result.question_key,
+                type: result.question_type,
+                options: result.options,
+              };
+
+              // อัพเดทคำถาม
+              document.getElementById("symptom-question").textContent =
+                result.question;
+
+              // สร้าง input ตามประเภท
+              const inputArea = document.getElementById("symptom-input-area");
+              inputArea.innerHTML = "";
+
+              if (result.question_type === "number") {
+                inputArea.innerHTML = `<input type="number" id="symptom-answer" min="0" max="120">`;
+              } else if (result.question_type === "choice") {
+                let optionsHtml = "";
+                result.options.forEach((option, index) => {
+                  optionsHtml += `
+                                    <div style="margin-bottom: 10px;">
+                                        <input type="radio" id="option-${index}" name="symptom-answer" value="${option}">
+                                        <label for="option-${index}">${option}</label>
+                                    </div>
+                                `;
+                });
+                inputArea.innerHTML = optionsHtml;
+              } else {
+                inputArea.innerHTML = `<input type="text" id="symptom-answer">`;
+              }
+
+              // อัพเดท progress
+              const progressParts = result.progress.split("/");
+              const progressPercent =
+                (parseInt(progressParts[0]) / parseInt(progressParts[1])) * 100;
+              document.getElementById(
+                "symptom-progress"
+              ).style.width = `${progressPercent}%`;
+
+              // แสดง alert
+              const alert = document.getElementById("symptom-alert");
+              alert.textContent = `คำถามที่ ${progressParts[0]} จาก ${progressParts[1]}`;
+              alert.className = "alert alert-success";
+              alert.style.display = "block";
+            }
+          } else {
+            alert("เกิดข้อผิดพลาด: " + result.error);
+          }
+        } catch (error) {
+          alert("เกิดข้อผิดพลาดในการเชื่อมต่อ: " + error.message);
+        }
+      }
+
+      // ฟังก์ชันรีเซ็ตการซักประวัติ
+      function resetSymptom() {
+        document.getElementById("symptom-form").style.display = "none";
+        document.getElementById("symptom-result").style.display = "none";
+        document.getElementById("symptom-start").style.display = "block";
+        document.getElementById("symptom-alert").style.display = "none";
+        symptomSessionId = null;
+        currentSymptomQuestion = null;
+      }
+
+      // ฟังก์ชันส่งข้อความแชท
+      async function sendChatMessage() {
+        const input = document.getElementById("chat-input");
+        const message = input.value.trim();
+
+        if (!message) return;
+
+        // เพิ่มข้อความของผู้ใช้ในแชท
+        addChatMessage(message, "user");
+
+        // ล้าง input
+        input.value = "";
+
+        // ส่งข้อความไปยัง API
+        const formData = new FormData();
+        formData.append("message", message);
+        formData.append("session_id", currentSessionId);
+
+        try {
+          const response = await fetch("http://localhost:8000/chat", {
+            method: "POST",
+            body: formData,
+          });
+
+          const result = await response.json();
+
+          if (result.success) {
+            addChatMessage(result.response, "ai");
+          } else {
+            addChatMessage(
+              "ขออภัย เกิดข้อผิดพลาดในการประมวลผล: " + result.error,
+              "ai"
+            );
+          }
+        } catch (error) {
+          addChatMessage(
+            "ขออภัย เกิดข้อผิดพลาดในการเชื่อมต่อกับเซิร์ฟเวอร์",
+            "ai"
+          );
+        }
+      }
+
+      // ฟังก์ชันเพิ่มข้อความในแชท
+      function addChatMessage(message, sender) {
+        const chatMessages = document.getElementById("chat-messages");
+        const messageDiv = document.createElement("div");
+        messageDiv.className = `message ${sender}-message`;
+        messageDiv.textContent = message;
+
+        chatMessages.appendChild(messageDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+      }
+
+      // ฟังก์ชันจัดการการกดปุ่มในแชท
+      function handleChatKeypress(event) {
+        if (event.key === "Enter") {
+          sendChatMessage();
+        }
+      }
+
+      // ฟังก์ชันล้างแชท
+      function clearChat() {
+        document.getElementById("chat-messages").innerHTML = `
+                <div class="message ai-message">
+                    สวัสดีครับ/ค่ะ! ฉันเป็นผู้ช่วยทางการแพทย์ AI มีอะไรให้ช่วยเหลือไหมครับ/คะ?
+                </div>
+            `;
+      }
+
+      // ฟังก์ชันโหลดสถิติ
+      async function loadPatientStats() {
+        document.getElementById("stats-loading").style.display = "block";
+
+        try {
+          const response = await fetch("http://localhost:8000/patient/stats");
+          const result = await response.json();
+
+          document.getElementById("stats-loading").style.display = "none";
+
+          if (result.success) {
+            const stats = result.stats;
+            const statsContainer = document.getElementById("stats-container");
+
+            let statsHtml = `
+                        <div class="stat-card">
+                            <div class="stat-icon"><i class="fas fa-users"></i></div>
+                            <div class="stat-value">${
+                              stats.total_patients
+                            }</div>
+                            <div class="stat-label">จำนวนผู้ป่วยทั้งหมด</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon"><i class="fas fa-user-injured"></i></div>
+                            <div class="stat-value">${
+                              Object.keys(stats.conditions).length
+                            }</div>
+                            <div class="stat-label">ประเภทอาการ</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon"><i class="fas fa-venus-mars"></i></div>
+                            <div class="stat-value">${
+                              Object.keys(stats.gender).length
+                            }</div>
+                            <div class="stat-label">ประเภทเพศ</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon"><i class="fas fa-tint"></i></div>
+                            <div class="stat-value">${
+                              Object.keys(stats.blood_types).length
+                            }</div>
+                            <div class="stat-label">กรุ๊ปเลือด</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon"><i class="fas fa-birthday-cake"></i></div>
+                            <div class="stat-value">${stats.avg_age.toFixed(
+                              1
+                            )}</div>
+                            <div class="stat-label">อายุเฉลี่ย</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon"><i class="fas fa-money-bill-wave"></i></div>
+                            <div class="stat-value">${stats.avg_billing.toFixed(
+                              2
+                            )}</div>
+                            <div class="stat-label">ค่าใช้จ่ายเฉลี่ย</div>
+                        </div>
+                    `;
+
+            statsContainer.innerHTML = statsHtml;
+          } else {
+            statsContainer.innerHTML =
+              "<p>ไม่สามารถโหลดสถิติได้: " + result.error + "</p>";
+          }
+        } catch (error) {
+          document.getElementById("stats-loading").style.display = "none";
+          document.getElementById("stats-container").innerHTML =
+            "<p>เกิดข้อผิดพลาดในการเชื่อมต่อ: " + error.message + "</p>";
+        }
+      }
+
+      // เริ่มต้นด้วยการโหลดสถิติ
+      window.onload = function () {
+        loadPatientStats();
+      };
+    </script>
+  </body>
+</html>

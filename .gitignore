@@ -1,0 +1,82 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Environment Variables
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*.swn
+.DS_Store
+
+# Large Files
+*.pkl
+*.h5
+*.pth
+*.pt
+*.onnx
+*.csv
+*.xlsx
+*.json
+*.zip
+*.tar.gz
+
+# Models (ถ้าไม่ต้องการ commit models ขนาดใหญ่)
+# models/*.pt
+# models/*.pth
+# condition_model.pkl
+
+# Dataset
+healthcare_dataset.csv
+*.csv
+data/
+
+# Logs
+*.log
+logs/
+
+# Test
+.pytest_cache/
+.coverage
+htmlcov/
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb
+
+# Temp
+*.tmp
+*.bak
+*.swp
+*~

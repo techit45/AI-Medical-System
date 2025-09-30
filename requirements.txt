@@ -1,0 +1,16 @@
+fastapi
+uvicorn
+pandas
+langchain
+langchain-openai
+python-multipart
+scikit-learn
+python-dotenv
+openai
+ultralytics
+Pillow
+torch
+torchvision
+numpy
+opencv-python
+streamlit
