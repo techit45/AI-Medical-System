@@ -33,7 +33,16 @@ xray_model = YOLO("models/xray_best.pt")
 blood_model = YOLO("models/blood_best.pt")
 
 # OpenAI Client Setup
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+try:
+    client = OpenAI(
+        api_key=os.getenv("OPENAI_API_KEY"),
+        max_retries=2
+    )
+except TypeError:
+    # Fallback if there are issues with initialization
+    import openai
+    openai.api_key = os.getenv("OPENAI_API_KEY")
+    client = openai
 
 # เก็บ conversation history สำหรับแต่ละ session
 chat_histories = {}
