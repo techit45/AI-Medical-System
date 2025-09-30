@@ -35,10 +35,12 @@ xray_model = YOLO("models/xray_best.pt")
 blood_model = YOLO("models/blood_best.pt")
 
 # LangChain Chatbot Setup
+# Set environment variable for OpenAI
+os.environ["OPENAI_API_KEY"] = os.getenv("OPENAI_API_KEY", "")
+
 llm = ChatOpenAI(
-    model="gpt-3.5-turbo",
-    temperature=0.3,
-    openai_api_key=os.getenv("OPENAI_API_KEY")
+    model_name="gpt-3.5-turbo",
+    temperature=0.3
 )
 
 # เก็บ memory สำหรับแต่ละ session
