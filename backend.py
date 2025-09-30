@@ -36,9 +36,9 @@ blood_model = YOLO("models/blood_best.pt")
 
 # LangChain Chatbot Setup
 llm = ChatOpenAI(
-    api_key=os.getenv("OPENAI_API_KEY"),
     model="gpt-3.5-turbo",
-    temperature=0.3
+    temperature=0.3,
+    openai_api_key=os.getenv("OPENAI_API_KEY")
 )
 
 # เก็บ memory สำหรับแต่ละ session
